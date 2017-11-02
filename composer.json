@@ -1,0 +1,22 @@
+{
+   "name": "niirrty/niirrty.gps",
+   "type": "library",
+   "description": "A GIS/GPS library.",
+   "license": "MIT",
+   "authors": [
+      {
+         "name": "Ni Irrty",
+         "email": "niirrty+code@gmail.com"
+      }
+   ],
+   "require": {
+      "php": ">=7.1",
+      "niirrty/niirrty.core": "~0.1",
+      "niirrty/niirrty.dynprop": "~0.1"
+   },
+   "autoload": {
+      "psr-4": {
+         "Niirrty\\Gps\\": "src/"
+      }
+   }
+}
