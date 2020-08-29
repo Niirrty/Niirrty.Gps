@@ -11,8 +11,9 @@
    ],
    "require": {
       "php": ">=7.1",
-      "niirrty/niirrty.core": "~0.1",
-      "niirrty/niirrty.dynprop": "~0.1"
+      "niirrty/niirrty.core": "~0.3",
+      "niirrty/niirrty.dynprop": "~0.3",
+      "ext-simplexml": "*"
    },
    "autoload": {
       "psr-4": {
