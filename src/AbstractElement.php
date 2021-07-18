@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Ni Irrty
+ * @copyright  © 2017-2021, Ni Irrty
  * @package    Niirrty\Gps
  * @since      2017-11-02
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -14,27 +14,8 @@ declare( strict_types=1 );
 namespace Niirrty\Gps;
 
 
-use Niirrty\DynProp\ExplicitGetter;
-use Niirrty\TypeTool;
-use function abs;
-use function count;
-use function doubleval;
-use function explode;
-use function in_array;
-use function intval;
-use function is_double;
-use function is_int;
-use function is_null;
-use function is_string;
-use function join;
-use function ltrim;
-use function round;
-use function sprintf;
-use function str_replace;
-use function strlen;
-use function strtoupper;
-use function strval;
-use function trim;
+use \Niirrty\DynProp\ExplicitGetter;
+use \Niirrty\TypeTool;
 
 
 /**
@@ -52,8 +33,7 @@ abstract class AbstractElement extends ExplicitGetter
 {
 
 
-    // <editor-fold desc="// – – –   P R O T E C T E D   F I E L D S   – – – – – – – – – – – – – – – – – – – – – –">
-
+    #region // – – –   P R O T E C T E D   F I E L D S   – – – – – – – – – – – – – – – – – – – – – –
 
     /**
      * All instance properties (direction, degrees, minutes, seconds, decimal, islatitude)
@@ -68,7 +48,7 @@ abstract class AbstractElement extends ExplicitGetter
      *
      * @var array
      */
-    protected $properties = [
+    protected array $properties = [
         'direction'  => '',
         'degrees'    => 0,
         'minutes'    => 0,
@@ -77,13 +57,13 @@ abstract class AbstractElement extends ExplicitGetter
         'islatitude' => false,
     ];
 
-    // </editor-fold>
+    #endregion
 
 
-    // <editor-fold desc="// – – –   P U B L I C   M E T H O D S   – – – – – – – – – – – – – – – – – – – – – – – –">
+    #region // – – –   P U B L I C   M E T H O D S   – – – – – – – – – – – – – – – – – – – – – – – –
 
 
-    // <editor-fold desc="// - - -   G E T T E R   - - - - - - - - - - - - - - - - - - - - - -">
+    #region // - - -   G E T T E R   - - - - - - - - - - - - - - - - - - - - - -
 
     /**
      * Returns the element decimal value representation. can be positive or negative value
@@ -145,23 +125,23 @@ abstract class AbstractElement extends ExplicitGetter
 
     }
 
-    // </editor-fold>
+    #endregion
 
 
-    // <editor-fold desc="// - - -   S E T T E R   - - - - - - - - - - - - - - - - - - - - - -">
+    #region // - - -   S E T T E R   - - - - - - - - - - - - - - - - - - - - - -
 
     /**
-     * @param double|int|string $decimalValue
+     * @param float|int|string $decimalValue
      *
      * @return bool
      */
-    public final function setDecimalValue( float $decimalValue ): bool
+    public final function setDecimalValue( float|int|string $decimalValue ): bool
     {
 
-        if ( !is_double( $decimalValue ) )
+        if ( ! \is_double( $decimalValue ) )
         {
             // Its not a double value => convert is
-            $decimalValue = doubleval( $decimalValue );
+            $decimalValue = \doubleval( $decimalValue );
         }
 
         // Define the min and max allowed values
@@ -202,10 +182,10 @@ abstract class AbstractElement extends ExplicitGetter
 
     }
 
-    // </editor-fold>
+    #endregion
 
 
-    // <editor-fold desc="// = = = =   O T H E R   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = =">
+    #region // = = = =   O T H E R   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = =
 
     /**
      * Returns a element with the DMS (Degrees Minutes Seconds) Format like: N 70° 50' 12"
@@ -228,11 +208,11 @@ abstract class AbstractElement extends ExplicitGetter
             if ( $withoutSpaces )
             {
                 return "{$this->properties[ 'direction' ]}{$this->properties[ 'degrees' ]}°{$this->properties[ 'minutes' ]}'"
-                       . round( $this->properties[ 'seconds' ], $secondsDecimalPlaces ) . '"';
+                       . \round( $this->properties[ 'seconds' ], $secondsDecimalPlaces ) . '"';
             }
 
             return "{$this->properties[ 'direction' ]} {$this->properties[ 'degrees' ]}° {$this->properties[ 'minutes' ]}' "
-                   . round( $this->properties[ 'seconds' ], $secondsDecimalPlaces ) . '"';
+                   . \round( $this->properties[ 'seconds' ], $secondsDecimalPlaces ) . '"';
 
         }
 
@@ -240,12 +220,12 @@ abstract class AbstractElement extends ExplicitGetter
         if ( $withoutSpaces )
         {
             return "{$this->properties[ 'degrees' ]}°{$this->properties[ 'minutes' ]}'"
-                   . round( $this->properties[ 'seconds' ], $secondsDecimalPlaces )
+                   . \round( $this->properties[ 'seconds' ], $secondsDecimalPlaces )
                    . "\"{$this->properties[ 'direction' ]}";
         }
 
         return "{$this->properties[ 'degrees' ]}° {$this->properties[ 'minutes' ]}' "
-               . round( $this->properties[ 'seconds' ], $secondsDecimalPlaces )
+               . \round( $this->properties[ 'seconds' ], $secondsDecimalPlaces )
                . "\" {$this->properties[ 'direction' ]}";
 
     }
@@ -264,11 +244,11 @@ abstract class AbstractElement extends ExplicitGetter
         if ( $withoutSpaces )
         {
             return "{$this->properties[ 'direction' ]}{$this->properties[ 'degrees' ]}:{$this->properties[ 'minutes' ]}:"
-                   . round( $this->properties[ 'seconds' ], $secondsDecimalPlaces );
+                   . \round( $this->properties[ 'seconds' ], $secondsDecimalPlaces );
         }
 
         return "{$this->properties[ 'direction' ]} {$this->properties[ 'degrees' ]}:{$this->properties[ 'minutes' ]}:"
-               . round( $this->properties[ 'seconds' ], $secondsDecimalPlaces );
+               . \round( $this->properties[ 'seconds' ], $secondsDecimalPlaces );
 
     }
 
@@ -287,10 +267,10 @@ abstract class AbstractElement extends ExplicitGetter
         $returnValue = "{$this->properties[ 'direction' ]} {$this->properties[ 'degrees' ]}° ";
 
         // Calculate the minutes value
-        $minutes = doubleval( 0.0 + $this->properties[ 'minutes' ] + ( $this->properties[ 'seconds' ] / 60 ) );
+        $minutes = \doubleval( 0.0 + $this->properties[ 'minutes' ] + ( $this->properties[ 'seconds' ] / 60 ) );
 
         // Append the minutes to the returning string
-        $returnValue .= round( $minutes, $minutesDecimalPlaces )
+        $returnValue .= \round( $minutes, $minutesDecimalPlaces )
                         . ( $showMinuteChar ? "'" : '' );
 
         // Return the resulting string
@@ -321,10 +301,10 @@ abstract class AbstractElement extends ExplicitGetter
         $returnValue = "{$firstChar}{$this->properties[ 'degrees' ]}° ";
 
         // Calculate the minutes value
-        $minutes = doubleval( 0.0 + $this->properties[ 'minutes' ] + ( $this->properties[ 'seconds' ] / 60 ) );
+        $minutes = \doubleval( 0.0 + $this->properties[ 'minutes' ] + ( $this->properties[ 'seconds' ] / 60 ) );
 
         // Append the minutes
-        $returnValue .= round( $minutes, $minutesDecimalPlaces )
+        $returnValue .= \round( $minutes, $minutesDecimalPlaces )
                         . ( $showMinuteChar ? "'" : '' );
 
         return $returnValue;
@@ -341,7 +321,7 @@ abstract class AbstractElement extends ExplicitGetter
     public final function formatDecimal( int $precision = 8 ): float
     {
 
-        return round( $this->properties[ 'decimal' ], $precision );
+        return \round( $this->properties[ 'decimal' ], $precision );
 
     }
 
@@ -354,7 +334,7 @@ abstract class AbstractElement extends ExplicitGetter
     {
 
         return "{$this->properties[ 'degrees' ]} deg {$this->properties[ 'minutes' ]}' "
-               . str_replace( ',', '.', strval( round( $this->properties[ 'seconds' ], 3 ) ) )
+               . \str_replace( ',', '.', \strval( \round( $this->properties[ 'seconds' ], 3 ) ) )
                . "\" {$this->properties[ 'direction' ]}";
 
     }
@@ -371,13 +351,13 @@ abstract class AbstractElement extends ExplicitGetter
 
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    // </editor-fold>
+    #endregion
 
 
-    // <editor-fold desc="// = = = =   P R O T E C T E D   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = =">
+    #region // = = = =   P R O T E C T E D   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Changes the current direction value.
@@ -386,18 +366,18 @@ abstract class AbstractElement extends ExplicitGetter
      *
      * @throws GpsException If the direction does not match the based latitude or longitude element.
      */
-    protected function initDirection( string $direction )
+    protected function initDirection( string $direction ): void
     {
 
         // Convert the direction to UPPER case
-        $direction = strtoupper( trim( $direction ) );
+        $direction = \strtoupper( \trim( $direction ) );
 
-        if ( strlen( $direction ) != 1 )
+        if ( \strlen( $direction ) != 1 )
         {
             // Bad Format
             throw new GpsException(
                 GpsException::ERROR_TYPE_DIRECTION,
-                sprintf( "'%s' is not allowed.", $direction )
+                \sprintf( "'%s' is not allowed.", $direction )
             );
         }
 
@@ -415,7 +395,7 @@ abstract class AbstractElement extends ExplicitGetter
             // Not allowed value
             throw new GpsException(
                 GpsException::ERROR_TYPE_DIRECTION,
-                sprintf(
+                \sprintf(
                     "'%s' isnt allowed. Please use '%s'",
                     $direction,
                     join( "' or '", $allowedDirections )
@@ -434,19 +414,8 @@ abstract class AbstractElement extends ExplicitGetter
      *
      * @throws GpsException If the direction is defined outside the allowed range, depending to Direction.
      */
-    protected function initDegrees( $degrees )
+    protected function initDegrees( int $degrees ): void
     {
-
-        if ( !is_int( $degrees ) )
-        {
-            // Convert to integer
-            $degrees = ltrim( $degrees, '0' );
-            if ( strlen( $degrees ) < 1 )
-            {
-                $degrees = '0';
-            }
-            $degrees = intval( $degrees );
-        }
 
         // Define the min + max allowed values
         $min = $this->properties[ 'islatitude' ] ? -90 : -180;
@@ -462,7 +431,7 @@ abstract class AbstractElement extends ExplicitGetter
             {
                 throw new GpsException(
                     GpsException::ERROR_TYPE_DEGREES,
-                    sprintf(
+                    \sprintf(
                         '%s° is out of allowed range 0-%s for a %s.',
                         $degrees,
                         $max,
@@ -470,14 +439,14 @@ abstract class AbstractElement extends ExplicitGetter
                     )
                 );
             }
-            $degrees = abs( $degrees );
+            $degrees = \abs( $degrees );
         }
 
         if ( $degrees > $max )
         {
             throw new GpsException(
                 GpsException::ERROR_TYPE_DEGREES,
-                sprintf(
+                \sprintf(
                     '%s° is out of allowed range 0-%s for a %s.',
                     $degrees,
                     $max,
@@ -498,14 +467,14 @@ abstract class AbstractElement extends ExplicitGetter
      *
      * @throws GpsException If the minutes is wrong.
      */
-    protected function initMinutes( $minutes, $seconds )
+    protected function initMinutes( float $minutes, float $seconds ): void
     {
 
-        if ( !TypeTool::IsDecimal( $minutes ) )
+        if ( ! TypeTool::IsDecimal( $minutes ) )
         {
             throw new GpsException(
                 GpsException::ERROR_TYPE_MINUTES,
-                sprintf( "'%s' is not of required decimal number format.", $minutes )
+                \sprintf( "'%s' is not of required decimal number format.", $minutes )
             );
         }
 
@@ -519,13 +488,13 @@ abstract class AbstractElement extends ExplicitGetter
      *
      * @return boolean
      */
-    protected function extractTime( $minutes, $seconds )
+    protected function extractTime( float $minutes, float $seconds ): bool
     {
 
-        if ( is_null( $seconds ) || $seconds < 1 )
+        if ( \is_null( $seconds ) || $seconds < 1 )
         {
 
-            if ( is_int( $minutes ) )
+            if ( \is_int( $minutes ) )
             {
                 $this->properties[ 'minutes' ] = $minutes;
                 $this->properties[ 'seconds' ] = 0.0;
@@ -533,33 +502,9 @@ abstract class AbstractElement extends ExplicitGetter
                 return true;
             }
 
-            if ( is_double( $minutes ) )
-            {
-                $tmp = explode( '.', str_replace( ',', '.', (string) $minutes ), 2 );
-                if ( count( $tmp ) == 0 )
-                {
-                    $this->properties[ 'minutes' ] = 0;
-                    $this->properties[ 'seconds' ] = 0.0;
+            $tmp = \explode( '.', \str_replace( ',', '.', (string) $minutes ), 2 );
 
-                    return true;
-                }
-                if ( count( $tmp ) == 1 )
-                {
-                    $this->properties[ 'minutes' ] = intval( $minutes );
-                    $this->properties[ 'seconds' ] = 0.0;
-
-                    return true;
-                }
-                $this->properties[ 'minutes' ] = intval( $tmp[ 0 ] );
-                $sec = doubleval( '0.' . $tmp[ 1 ] );
-                $this->properties[ 'seconds' ] = round( 60.0 * $sec, 8 );
-
-                return true;
-            }
-
-            $tmp = explode( '.', str_replace( ',', '.', (string) $minutes ), 2 );
-
-            if ( count( $tmp ) == 0 )
+            if ( 0 === \count( $tmp ) )
             {
                 $this->properties[ 'minutes' ] = 0;
                 $this->properties[ 'seconds' ] = 0.0;
@@ -567,45 +512,60 @@ abstract class AbstractElement extends ExplicitGetter
                 return true;
             }
 
-            if ( count( $tmp ) == 1 )
+            if ( \is_double( $minutes ) )
             {
-                $this->properties[ 'minutes' ] = intval( $tmp[ 0 ] );
-                $this->properties[ 'seconds' ] = 0.0;
+                if ( \count( $tmp ) == 1 )
+                {
+                    $this->properties[ 'minutes' ] = \intval( $minutes );
+                    $this->properties[ 'seconds' ] = 0.0;
+
+                    return true;
+                }
+                $this->properties[ 'minutes' ] = \intval( $tmp[ 0 ] );
+                $sec = \doubleval( '0.' . $tmp[ 1 ] );
+                $this->properties[ 'seconds' ] = \round( 60.0 * $sec, 8 );
 
                 return true;
             }
 
-            $this->properties[ 'minutes' ] = intval( $tmp[ 0 ] );
-            $sec = doubleval( '0.' . $tmp[ 1 ] );
-            $this->properties[ 'seconds' ] = round( 60.0 * $sec, 6 );
+            $this->properties[ 'minutes' ] = \intval( $tmp[ 0 ] );
+
+            if ( \count( $tmp ) == 1 )
+            {
+                $this->properties[ 'seconds' ] = 0.0;
+                return true;
+            }
+
+            $sec = \doubleval( '0.' . $tmp[ 1 ] );
+            $this->properties[ 'seconds' ] = \round( 60.0 * $sec, 6 );
 
             return true;
 
         }
 
-        if ( is_string( $seconds ) )
+        if ( \is_string( $seconds ) )
         {
-            $seconds = doubleval( $seconds );
+            $seconds = \doubleval( $seconds );
         }
 
-        $this->properties[ 'seconds' ] = round( $seconds, 8 );
+        $this->properties[ 'seconds' ] = \round( $seconds, 8 );
 
-        if ( is_int( $minutes ) )
+        if ( \is_int( $minutes ) )
         {
             $this->properties[ 'minutes' ] = $minutes;
 
             return true;
         }
 
-        $min = ltrim( (string) $minutes, '0.' );
+        $min = \ltrim( (string) $minutes, '0.' );
 
-        if ( strlen( $min ) < 1 )
+        if ( \strlen( $min ) < 1 )
         {
             $this->properties[ 'minutes' ] = 0;
         }
         else
         {
-            $this->properties[ 'minutes' ] = intval( $minutes );
+            $this->properties[ 'minutes' ] = \intval( $minutes );
         }
 
         return true;
@@ -615,11 +575,11 @@ abstract class AbstractElement extends ExplicitGetter
     /**
      * …
      */
-    protected function calcDec()
+    protected function calcDec() : void
     {
 
         $totalSeconds = ( 60.0 * $this->properties[ 'minutes' ] ) + $this->properties[ 'seconds' ];
-        $fractPart = (float) ( $totalSeconds / 3600.0 );
+        $fractPart = $totalSeconds / 3600.0;
         $res = $this->properties[ 'degrees' ] + $fractPart;
 
         if ( $this->properties[ 'direction' ] == 'E' || $this->properties[ 'direction' ] == 'N' )
@@ -633,33 +593,33 @@ abstract class AbstractElement extends ExplicitGetter
 
     }
 
-    // </editor-fold>
+    #endregion
 
 
-    // <editor-fold desc="// = = = =   P R I V A T E   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = =">
+    #region // = = = =   P R I V A T E   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = =
 
     private static function extractDec( $value ): array
     {
 
-        $tmp = explode( '.', str_replace( ',', '.', (string) $value ), 2 );
+        $tmp = \explode( '.', \str_replace( ',', '.', (string) $value ), 2 );
 
-        if ( count( $tmp ) < 1 )
+        if ( \count( $tmp ) < 1 )
         {
             return [ 0, 0 ];
         }
 
-        if ( count( $tmp ) < 2 )
+        if ( \count( $tmp ) < 2 )
         {
             return [ intval( $value ), 0 ];
         }
 
-        if ( strlen( $tmp[ 0 ] ) < 1 )
+        if ( \strlen( $tmp[ 0 ] ) < 1 )
         {
             $tmp[ 0 ] = 0;
         }
         else
         {
-            $tmp[ 0 ] = intval( $tmp[ 0 ] );
+            $tmp[ 0 ] = \intval( $tmp[ 0 ] );
         }
 
         if ( strlen( $tmp[ 1 ] ) < 1 )
@@ -668,25 +628,25 @@ abstract class AbstractElement extends ExplicitGetter
         }
         else
         {
-            $tmp[ 1 ] = intval( $tmp[ 1 ] );
+            $tmp[ 1 ] = \intval( $tmp[ 1 ] );
         }
 
         return $tmp;
 
     }
 
-    // </editor-fold>
+    #endregion
 
 
-    // <editor-fold desc="// = = = =   P R O T E C T E D   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = =">
+    #region // = = = =   P R O T E C T E D   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = =
 
-    protected static function _DecToDDMS( $degfloat, $isLongi = false )
+    protected static function _DecToDDMS( $degfloat, $isLongi = false ): array
     {
 
-        if ( !is_double( $degfloat ) )
+        if ( ! \is_double( $degfloat ) )
         {
             // $degfloat must be of type double/float
-            $degfloat = doubleval( $degfloat );
+            $degfloat = \doubleval( $degfloat );
         }
 
         // Remember if $degfloat is negative
@@ -710,7 +670,7 @@ abstract class AbstractElement extends ExplicitGetter
         $minfloatStr = self::extractDec( $minfloat );
         $res[ 'MIN' ] = $minfloatStr[ 0 ];
         $secfloat = 60.0 * ( $minfloat - $res[ 'MIN' ] );
-        $secfloat = round( $secfloat, 5 );
+        $secfloat = \round( $secfloat, 5 );
         if ( $secfloat == 60.0 )
         {
             ++$res[ 'MIN' ];
@@ -726,8 +686,7 @@ abstract class AbstractElement extends ExplicitGetter
         return $res;
     }
 
-
-    // </editor-fold>
+    #endregion
 
 
 }

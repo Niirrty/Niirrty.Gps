@@ -1,9 +1,9 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Ni Irrty
+ * @copyright  © 2017-2021, Ni Irrty
  * @since      2017-11-02
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -35,13 +35,13 @@ class Ellipsoid
 {
 
 
-    // <editor-fold desc="// – – –   P U B L I C   S T A T I C   F I E L D S   – – – – – – – – – – – – – – – – – –">
+    #region // – – –   P U B L I C   S T A T I C   F I E L D S   – – – – – – – – – – – – – – – – – –
 
-    public static $Ellipsoid = [];
+    public static array $Ellipsoid = [];
 
-    // </editor-fold>
+    #endregion
 
-    // <editor-fold desc="// – – –   C O N S T A N T S   – – – – – – – – – – – – – – – – – – – – – – – – – – – – –">
+    #region // – – –   C O N S T A N T S   – – – – – – – – – – – – – – – – – – – – – – – – – – – – –
 
     const TYPE_AIRY                  = 'Airy';
 
@@ -90,7 +90,7 @@ class Ellipsoid
     const TYPE_WGS_84                = 'WGS-84';
 
 
-    // </editor-fold>
+    #endregion
 
 }
 

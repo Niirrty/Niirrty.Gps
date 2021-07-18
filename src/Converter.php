@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Ni Irrty
+ * @copyright  © 2017-2021, Ni Irrty
  * @package    Niirrty\Gps
  * @since      2017-11-02
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -14,22 +14,8 @@ declare( strict_types=1 );
 namespace Niirrty\Gps;
 
 
-use Niirrty\Gps\Ext\Ellipsoid;
-use Niirrty\NiirrtyException;
-use function cos;
-use function doubleval;
-use function intval;
-use function is_double;
-use function pow;
-use function preg_match;
-use function round;
-use function sin;
-use function sprintf;
-use function sqrt;
-use function strlen;
-use function strtoupper;
-use function substr;
-use function tan;
+use \Niirrty\Gps\Ext\Ellipsoid;
+use \Niirrty\NiirrtyException;
 
 
 /**
@@ -39,7 +25,7 @@ class Converter
 {
 
 
-    # <editor-fold desc="= = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region = = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     const PI       = 3.14159265;
 
@@ -49,28 +35,28 @@ class Converter
 
     const RAD2DEG  = 57.2957795785523;
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P R I V A T E   C O N S T U C T O R   = = = = = = = = = = = = = = = = = = = = =">
+    #region = = =   P R I V A T E   C O N S T U C T O R   = = = = = = = = = = = = = = = = = = = = =
 
     private function __construct() { }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = = =">
+    #region = = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = = =
 
     /**
      * Converts a latitude + longitude to UTM format.
      *
      * @param string                 $ellipsoid e.g. 'WGS-84' use one of the Ellipsoid::TYPE_* constants
-     * @param AbstractElement|double $lat       The latitude
-     * @param AbstractElement|double $long      The longitude.
+     * @param double|AbstractElement $lat       The latitude
+     * @param double|AbstractElement $long      The longitude.
      *
-     * @return string|FALSE
+     * @return string|bool
      */
-    public static function LL2Utm( string $ellipsoid, $lat, $long )
+    public static function LL2Utm( string $ellipsoid, float|AbstractElement $lat, float|AbstractElement $long ): string|bool
     {
 
         if ( !isset( Ellipsoid::$Ellipsoid[ $ellipsoid ] ) )
@@ -82,33 +68,25 @@ class Converter
         // Get the longitude decimal value
         $ln = ( ( $long instanceof AbstractElement )
             ? $long->getDecimalValue()
-            : ( is_double( $long ) ? $long : doubleval( $long ) )
+            : ( \is_double( $long ) ? $long : \doubleval( $long ) )
         );
 
         // Get the latitude decimal value
         $lt = ( ( $lat instanceof AbstractElement )
             ? $lat->getDecimalValue()
-            : ( is_double( $lat ) ? $lat : doubleval( $lat ) )
+            : ( \is_double( $lat ) ? $lat : \doubleval( $lat ) )
         );
 
         // Init some required parameters
-        $longOrigin = null;
-        $eccPrimeSquared = null;
-        $longOriginRad = null;
         $k0 = 0.9996;
 
         // Doing the calculation
         $a = Ellipsoid::$Ellipsoid[ $ellipsoid ][ 0 ];
         $eccSquared = Ellipsoid::$Ellipsoid[ $ellipsoid ][ 1 ];
-        $N = null;
-        $T = null;
-        $C = null;
-        $A = null;
-        $M = null;
-        $longTemp = ( $ln + 180.0 ) - intval( ( $ln + 180 ) / 360 ) * 360 - 180;
+        $longTemp = ( $ln + 180.0 ) - \intval( ( $ln + 180 ) / 360 ) * 360 - 180;
         $latRad = $lt * self::DEG2RAD;
         $longRad = $longTemp * self::DEG2RAD;
-        $zoneNumber = intval( ( $longTemp + 180 ) / 6 ) + 1;
+        $zoneNumber = \intval( ( $longTemp + 180 ) / 6 ) + 1;
 
         if ( $lt >= 56.0 && $lt < 64.0 && $longTemp >= 3.0 && $longTemp < 12.0 )
         {
@@ -137,32 +115,31 @@ class Converter
 
         $longOrigin = ( $zoneNumber - 1 ) * 6 - 180 + 3;
         $longOriginRad = $longOrigin * self::DEG2RAD;
-        $UTMZone = sprintf(
+        $UTMZone = \sprintf(
             '%d%s',
             $zoneNumber,
             self::UTMLetterDesignator( $lt )
         );
 
         $eccPrimeSquared = ( $eccSquared ) / ( 1 - $eccSquared );
-        $N = $a / sqrt( 1 - $eccSquared * sin( $latRad ) * sin( $latRad ) );
-        $T = tan( $latRad ) * tan( $latRad );
-        $C = $eccPrimeSquared * cos( $latRad ) * cos( $latRad );
-        $A = cos( $latRad ) * ( $longRad - $longOriginRad );
+        $N = $a / \sqrt( 1 - $eccSquared * \sin( $latRad ) * \sin( $latRad ) );
+        $T = \tan( $latRad ) * \tan( $latRad );
+        $C = $eccPrimeSquared * \cos( $latRad ) * \cos( $latRad );
+        $A = \cos( $latRad ) * ( $longRad - $longOriginRad );
         $M = $a * (
                 ( 1 - $eccSquared / 4 - 3 * $eccSquared * $eccSquared / 64 - 5 * $eccSquared * $eccSquared * $eccSquared / 256 )
                 * $latRad
                 - ( 3 * $eccSquared / 8 + 3 * $eccSquared * $eccSquared / 32 + 45 * $eccSquared * $eccSquared * $eccSquared / 1024 )
-                  * sin( 2 * $latRad )
+                  * \sin( 2 * $latRad )
                 + ( 15 * $eccSquared * $eccSquared / 256 + 45 * $eccSquared * $eccSquared * $eccSquared / 1024 )
-                  * sin( 4 * $latRad )
-                - ( 35 * $eccSquared * $eccSquared * $eccSquared / 3072 ) * sin( 6 * $latRad )
+                  * \sin( 4 * $latRad )
+                - ( 35 * $eccSquared * $eccSquared * $eccSquared / 3072 ) * \sin( 6 * $latRad )
             );
 
-        $UTMEasting = (double) ( $k0 * $N * ( $A + ( 1 - $T + $C ) * $A * $A * $A / 6
+        $UTMEasting = $k0 * $N * ( $A + ( 1 - $T + $C ) * $A * $A * $A / 6
                                               + ( 5 - 18 * $T + $T * $T + 72 * $C - 58 * $eccPrimeSquared )
-                                                * $A * $A * $A * $A * $A / 120 ) + 500000.0
-        );
-        $UTMEasting = round( $UTMEasting, 0 );
+                                                * $A * $A * $A * $A * $A / 120 ) + 500000.0;
+        $UTMEasting = \round( $UTMEasting );
         $UTMNorthing = (double) ( $k0
                                   * ( $M + $N * tan( $latRad ) * ( $A * $A / 2 + ( 5 - $T + 9 * $C + 4 * $C * $C )
                                                                                   * $A * $A * $A * $A / 24 + ( 61 - 58 * $T + $T * $T + 600 * $C - 330 * $eccPrimeSquared )
@@ -174,7 +151,7 @@ class Converter
             $UTMNorthing += 10000000.0;
         }
 
-        $UTMNorthing = round( $UTMNorthing, 0 );
+        $UTMNorthing = \round( $UTMNorthing );
 
         return "{$UTMZone} E {$UTMEasting} N {$UTMNorthing}";
 
@@ -193,26 +170,26 @@ class Converter
      * @param integer $UTMEasting  The easting UTM definition
      * @param string  $UTMZone     The UTM zone. (e.g.: 10T)
      *
-     * @return array|FALSE
+     * @return array|bool
      * @throws NiirrtyException
      */
-    public static function Utm2LL( string $ellipsoid, int $UTMNorthing, int $UTMEasting, string $UTMZone )
+    public static function Utm2LL( string $ellipsoid, int $UTMNorthing, int $UTMEasting, string $UTMZone ): array|bool
     {
 
         $k0 = 0.9996;
-        if ( !isset( Ellipsoid::$Ellipsoid[ $ellipsoid ] ) )
+        if ( ! isset( Ellipsoid::$Ellipsoid[ $ellipsoid ] ) )
         {
             return false;
         }
 
         $a = Ellipsoid::$Ellipsoid[ $ellipsoid ][ 0 ];
         $eccSquared = Ellipsoid::$Ellipsoid[ $ellipsoid ][ 1 ];
-        $e1 = ( 1 - sqrt( 1 - $eccSquared ) ) / ( 1 + sqrt( 1 - $eccSquared ) );
+        $e1 = ( 1 - \sqrt( 1 - $eccSquared ) ) / ( 1 + \sqrt( 1 - $eccSquared ) );
         $x = $UTMEasting - 500000.0;
         $y = $UTMNorthing;
         #$NorthernHemisphere = 0;
-        $zoneNumber = intval( substr( $UTMZone, 0, -1 ) );
-        $ZoneLetter = strtoupper( $UTMZone[ strlen( $UTMZone ) - 1 ] );
+        $zoneNumber = \intval( \substr( $UTMZone, 0, -1 ) );
+        $ZoneLetter = \strtoupper( $UTMZone[ \strlen( $UTMZone ) - 1 ] );
         $NorthernHemisphere = ( $ZoneLetter == 'N' );
         if ( $NorthernHemisphere )
         {
@@ -225,17 +202,17 @@ class Converter
                      ( 1 - $eccSquared / 4 - 3 * $eccSquared * $eccSquared / 64 - 5 *
                                                                                   $eccSquared * $eccSquared * $eccSquared / 256 )
             );
-        $phi1Rad = $mu + ( 3 * $e1 / 2 - 27 * $e1 * $e1 * $e1 / 32 ) * sin( 2 * $mu )
+        $phi1Rad = $mu + ( 3 * $e1 / 2 - 27 * $e1 * $e1 * $e1 / 32 ) * \sin( 2 * $mu )
                    + ( 21 * $e1 * $e1 / 16 - 55 * $e1 * $e1 * $e1 * $e1 / 32 )
-                     * sin( 4 * $mu ) + ( 151 * $e1 * $e1 * $e1 / 96 ) * sin( 6 * $mu );
+                     * \sin( 4 * $mu ) + ( 151 * $e1 * $e1 * $e1 / 96 ) * \sin( 6 * $mu );
         #$phi1 = $phi1Rad * self::RAD2DEG;
-        $N1 = $a / sqrt( 1 - $eccSquared * sin( $phi1Rad ) * sin( $phi1Rad ) );
-        $T1 = tan( $phi1Rad ) * tan( $phi1Rad );
-        $C1 = $eccPrimeSquared * cos( $phi1Rad ) * cos( $phi1Rad );
-        $R1 = $a * ( 1 - $eccSquared ) / pow( 1 - $eccSquared * sin( $phi1Rad ) * sin( $phi1Rad ), 1.5 );
+        $N1 = $a / \sqrt( 1 - $eccSquared * \sin( $phi1Rad ) * \sin( $phi1Rad ) );
+        $T1 = \tan( $phi1Rad ) * \tan( $phi1Rad );
+        $C1 = $eccPrimeSquared * \cos( $phi1Rad ) * \cos( $phi1Rad );
+        $R1 = $a * ( 1 - $eccSquared ) / \pow( 1 - $eccSquared * \sin( $phi1Rad ) * \sin( $phi1Rad ), 1.5 );
         $D = $x / ( $N1 * $k0 );
         $Lat = $phi1Rad
-               - ( $N1 * tan( $phi1Rad ) / $R1 )
+               - ( $N1 * \tan( $phi1Rad ) / $R1 )
                  * ( $D * $D / 2 - ( 5 + 3 * $T1 + 10 * $C1 - 4 * $C1 * $C1 - 9 * $eccPrimeSquared )
                                    * $D * $D * $D * $D / 24
                      + ( 61 + 90 * $T1 + 298 * $C1 + 45 * $T1 * $T1 - 252 * $eccPrimeSquared - 3 * $C1 * $C1 )
@@ -246,10 +223,10 @@ class Converter
                     $D - ( 1 + 2 * $T1 + $C1 ) * $D * $D * $D / 6
                     + ( 5 - 2 * $C1 + 28 * $T1 - 3 * $C1 * $C1 + 8 * $eccPrimeSquared + 24 * $T1 * $T1 )
                       * $D * $D * $D * $D * $D / 120
-                ) / cos( $phi1Rad );
+                ) / \cos( $phi1Rad );
         $Long = $longOrigin + $Long * static::RAD2DEG;
-        if ( !Longitude::TryParse( $Long, $_lo )
-             || !Latitude::TryParse( $Lat, $_la ) )
+        if ( ! Longitude::TryParse( $Long, $_lo )
+             || ! Latitude::TryParse( $Lat, $_la ) )
         {
             return false;
         }
@@ -258,6 +235,7 @@ class Converter
             'Longitude' => $_lo,
             'Latitude'  => $_la,
         ];
+
     }
 
     /**
@@ -268,10 +246,10 @@ class Converter
      * @param string $ellipsoid     See the Ellipsoid::TYPE_* constants.
      * @param string $utmDefinition The UTM formatted coordinate definition.
      *
-     * @return array|bool|FALSE
+     * @return array|bool
      * @throws NiirrtyException
      */
-    public static function ParseUtm2LL( string $ellipsoid, string $utmDefinition )
+    public static function ParseUtm2LL( string $ellipsoid, string $utmDefinition ): array|bool
     {
 
         $m = null;
@@ -280,19 +258,19 @@ class Converter
             return false;
         }
 
-        $easting = intval( $m[ 2 ] );
-        $northing = intval( $m[ 3 ] );
+        $easting = \intval( $m[ 2 ] );
+        $northing = \intval( $m[ 3 ] );
 
         return self::Utm2LL( $ellipsoid, $northing, $easting, $m[ 1 ] );
 
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P R I V A T E   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    #region = = =   P R I V A T E   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =
 
-    private static function UTMLetterDesignator( $Lat )
+    private static function UTMLetterDesignator( $Lat ): string
     {
 
         if ( ( 84 >= $Lat ) && ( $Lat >= 72 ) )
@@ -379,8 +357,7 @@ class Converter
         return 'Z';
     }
 
-
-    # </editor-fold>
+    #endregion
 
 
 }

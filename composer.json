@@ -10,9 +10,9 @@
       }
    ],
    "require": {
-      "php": ">=7.1",
-      "niirrty/niirrty.core": "~0.3",
-      "niirrty/niirrty.dynprop": "~0.3",
+      "php": ">=8.0",
+      "niirrty/niirrty.core": "~0.4",
+      "niirrty/niirrty.dynprop": "~0.4",
       "ext-simplexml": "*"
    },
    "autoload": {
